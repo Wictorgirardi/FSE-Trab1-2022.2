@@ -1,59 +1,42 @@
-import RPi.GPIO as GPIO
-
-from time import sleep
-from threading import Thread
-
-GPIO.setwarnings(False)
-
-GPIO.setmode(GPIO.BCM)
-
-GPIO.setup(1, GPIO.OUT)
-GPIO.setup(12, GPIO.OUT)
-GPIO.setup(16, GPIO.OUT)
-GPIO.setup(20, GPIO.OUT)
-GPIO.setup(21, GPIO.OUT)
-GPIO.setup(26, GPIO.OUT)
+from configs.show_devices import connectCentral, showDevices
 
 
-def semaforo_1():
-  while True:
-    GPIO.output(12, GPIO.HIGH)
-    sleep(1)
-    GPIO.output(12, GPIO.LOW)
+menu_options = {
+    1: 'Acesso salas 1 e 3',
+    2: 'Acesso salas 2 e 4',
+    3: 'Sair',
+}
 
-    GPIO.output(20, GPIO.HIGH)
-    sleep(15)
-    GPIO.output(20, GPIO.LOW)
 
-    GPIO.output(16, GPIO.HIGH)
-    sleep(3)
-    GPIO.output(16, GPIO.LOW)
+def print_menu():
+    for key in menu_options.keys():
+        print(key, '--', menu_options[key])
 
-    GPIO.output(12, GPIO.HIGH)
-    sleep(10)
-    GPIO.output(12, GPIO.LOW)
-  
-def semaforo_2():
-  while True:
-    GPIO.output(21, GPIO.HIGH)
-    sleep(15)
-    GPIO.output(21, GPIO.LOW)
 
-    GPIO.output(1, GPIO.HIGH)
-    sleep(8)
-    GPIO.output(1, GPIO.LOW)
+def option1():
+   connectCentral()
 
-    GPIO.output(26, GPIO.HIGH)
-    sleep(3)
-    GPIO.output(26, GPIO.LOW)
 
-    GPIO.output(21, GPIO.HIGH)
-    sleep(15)
-    GPIO.output(21, GPIO.LOW)
-    
+def option2():
+    showDevices(2)
 
-semaforo_1 = Thread(target=semaforo_1)
-semaforo_1.start()
 
-semaforo_2 = Thread(target=semaforo_2)
-semaforo_2.start()
+if __name__ == '__main__':
+    while(True):
+        print('Bem vindo ao trabalho 1 de Fundamentos de Sistemas Embarcados do Wictor Girardi')
+        print_menu()
+        option = ''
+        try:
+            option = int(input('Escolha sua opção: '))
+        except:
+            print('Formato errado. Entre um número ...')
+        # Check what choice was entered and act accordingly
+        if option == 1:
+            option1()
+        elif option == 2:
+            option2()
+        elif option == 3:
+            print('Obrigado por utilizar o projeto!')
+            exit()
+        else:
+            print('Opção invalida, tente novamente!')
