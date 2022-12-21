@@ -12,20 +12,20 @@ def tempHumi(config,msg):
         dht_device = adafruit_dht.DHT22(board.D4, False)
       elif config['DHT22'] == 18:
         dht_device = adafruit_dht.DHT22(board.D18, False)
-      if dht_device.temperature is not None and dht_device.humidity is not None:
-        msg['Temperatura'] = round(dht_device.temperature, 2)
-        msg['Humidade'] = round(dht_device.humidity, 2)
+
+      msg['Temperatura'] = round(dht_device.temperature, 2)
+      msg['Humidade'] = round(dht_device.humidity, 2)
   except:
     tempHumi(config,msg)
 
 def contagem(config,msg):
   try:
-    i = 0
-    msg['Pessoas'] = str(i)
+    users = 0
+    msg['Pessoas'] = str(users)
     if GPIO.event_detected(config['SC_IN']):
-          i += 1
+          users = users + 1
     if GPIO.event_detected(config['SC_OUT']):
-          i -= 1
+          users = users - 1
   except:
     print('Erro durante a contagem')
 
