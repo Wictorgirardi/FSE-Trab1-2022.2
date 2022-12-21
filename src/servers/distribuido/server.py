@@ -4,8 +4,10 @@ import controller
 import RPi.GPIO as GPIO
 import socket
 
-def readConfig():
-    configfile = open('../../configs/configuracao_sala_02.json')
+server = 0
+
+def readConfig(sala):
+    configfile = open('../../configs/configuracao_sala_01.json') if sala == 1 else open('../../configs/configuracao_sala_02.json')
     obj = json.load(configfile)
     config = {}
 
@@ -39,14 +41,14 @@ def openSocket(config):
 def receive(server, config):
     while True:
       message = server.recv(2048).decode('ascii')
-      if 'GET_STATUS' in message:
+      if 'GET_ALL' in message:
         responseFile = open('../../configs/responses.json')
         file = json.load(responseFile)
         msg_to_send = json.dumps(file).encode('ascii')
         server.send(msg_to_send)
 
-      if 'ON_OFF_' in message:
-        device = message[7:]
+      if 'CONTROL_' in message:
+        device = message[8:]
         if GPIO.input(config[device]):
           GPIO.output(config[device], GPIO.LOW)
           server.send('OK'.encode('ascii'))
@@ -77,8 +79,13 @@ def receive(server, config):
           server.send('NOT_OK'.encode('ascii'))
 
 if __name__ == '__main__':
-    config = readConfig()
+    print('Escolha a configuração de sala desejada: ')
+    print('1 - Sala 1')
+    print('2 - Sala 2')
+    server = int(input())
+    config = readConfig(server)
     server = openSocket(config)
+    print('\nAguardando Servidor Distribuido')
 
     controlThread = threading.Thread(target=controller.states, args=(config,))
     controlThread.start()
